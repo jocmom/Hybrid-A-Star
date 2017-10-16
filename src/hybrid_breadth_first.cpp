@@ -97,6 +97,12 @@ vector< HBF::maze_s> HBF::reconstruct_path(vector< vector< vector<HBF::maze_s> >
 
 }
 
+HBF::double euclidian_distance(vector<double> position, vector<double> goal) {
+  double dx = position[0] - goal[0];
+  double dy = position[1] - goal[1];
+  return sqrt(dx*dx + dy*dy);  
+}
+
 HBF::maze_path HBF::search(vector< vector<int> > grid, vector<double> start, vector<int> goal) {
   /*
   Working Implementation of breadth first search. Does NOT use a heuristic
@@ -113,6 +119,7 @@ HBF::maze_path HBF::search(vector< vector<int> > grid, vector<double> start, vec
 
   maze_s state;
   state.g = g;
+  state.f = g + euclidian_distance(start, goal);
   state.x = start[0];
   state.y = start[1];
 
