@@ -3,6 +3,7 @@
 #include <fstream>
 #include <math.h>
 #include <vector>
+#include <algorithm>
 #include "hybrid_breadth_first.h"
 
 using namespace std;
@@ -97,9 +98,9 @@ vector< HBF::maze_s> HBF::reconstruct_path(vector< vector< vector<HBF::maze_s> >
 
 }
 
-HBF::double euclidian_distance(vector<double> position, vector<double> goal) {
-  double dx = position[0] - goal[0];
-  double dy = position[1] - goal[1];
+double HBF::euclidian_distance(double x1, double y1, double x2, double y2) {
+  double dx = x1 - x2;
+  double dy = y1 - y2;
   return sqrt(dx*dx + dy*dy);  
 }
 
@@ -119,9 +120,10 @@ HBF::maze_path HBF::search(vector< vector<int> > grid, vector<double> start, vec
 
   maze_s state;
   state.g = g;
-  state.f = g + euclidian_distance(start, goal);
   state.x = start[0];
   state.y = start[1];
+  state.h = euclidian_distance(state.x, state.y, (double)goal[0], (double)goal[1]);
+  state.f = g + state.h;
 
   closed[stack][idx(state.x)][idx(state.y)] = state;
   closed_value[stack][idx(state.x)][idx(state.y)] = 1;
@@ -131,7 +133,8 @@ HBF::maze_path HBF::search(vector< vector<int> > grid, vector<double> start, vec
   bool finished = false;
   while(!opened.empty())
   {
-
+    std::sort(opened.begin(), opened.end(), [](maze_s a, maze_s b) {return a.f < b.f;});
+    
     maze_s next = opened[0]; //grab first elment
     opened.erase(opened.begin()); //pop first element
 
@@ -155,6 +158,8 @@ HBF::maze_path HBF::search(vector< vector<int> > grid, vector<double> start, vec
       int g2 = next_state[i].g;
       double x2 = next_state[i].x;
       double y2 = next_state[i].y;
+      double h2 = euclidian_distance(x2, goal[0], y2, goal[1]);
+      double f2 = g2 + h2;
       double theta2 = next_state[i].theta;
 
       if((x2 < 0 || x2 >= grid.size()) || (y2 < 0 || y2 >= grid[0].size()))
@@ -171,6 +176,8 @@ HBF::maze_path HBF::search(vector< vector<int> > grid, vector<double> start, vec
         state2.g = g2;
         state2.x = x2;
         state2.y = y2;
+        state2.h = h2;
+        state2.f = f2;
         state2.theta = theta2;
 
         opened.push_back(state2);

@@ -19,7 +19,8 @@ public:
 	struct maze_s {
 	
 		int g;	// iteration
-		int h;
+		double h;
+		double f;
 		double x;
 		double y;
 		double theta;
@@ -55,7 +56,7 @@ public:
 
 		vector<maze_s> reconstruct_path(vector< vector< vector<maze_s> > > came_from, vector<double> start, HBF::maze_s final);
 		
-		double euclidian_distance(vector<double> position, vector<double> goal);
+		double euclidian_distance(double x1, double y1, double x2, double y2);
 
 };
 
